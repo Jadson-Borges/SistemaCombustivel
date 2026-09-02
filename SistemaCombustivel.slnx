@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SistemaCombustivel.Application/SistemaCombustivel.Application.csproj" />
+    <Project Path="src/SistemaCombustivel.Domain/SistemaCombustivel.Domain.csproj" />
+    <Project Path="src/SistemaCombustivel.Infrastructure/SistemaCombustivel.Infrastructure.csproj" />
+    <Project Path="src/SistemaCombustivel.Shared/SistemaCombustivel.Shared.csproj" />
+    <Project Path="src/SistemaCombustivel.Web.Client/SistemaCombustivel.Web.Client.csproj" />
+    <Project Path="src/SistemaCombustivel.Web/SistemaCombustivel.Web.csproj" />
+  </Folder>
+</Solution>
