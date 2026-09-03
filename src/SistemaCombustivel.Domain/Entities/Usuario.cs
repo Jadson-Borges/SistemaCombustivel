@@ -1,7 +1,7 @@
 ﻿
 namespace SistemaCombustivel.Domain.Entities
 {
-    internal class Usuario
+    public class Usuario
     {
         public int Id { get; private set; }
         public string NomeUsuario { get; private set; } = string.Empty;
@@ -14,9 +14,7 @@ namespace SistemaCombustivel.Domain.Entities
         public IReadOnlyCollection<UsuarioVeiculo> Veiculos => _veiculos.AsReadOnly();
 
         //usado pelo Etity Framework
-        protected Usuario() 
-        {
-        }
+        protected Usuario() { }
 
         public Usuario(string nomeUsuario, string email, TipoUsuario tipo)
         {
@@ -35,6 +33,12 @@ namespace SistemaCombustivel.Domain.Entities
         public void AlterarTipo(TipoUsuario novoTipo)
         {
             Tipo = novoTipo;
+        }
+
+        //sincronização centralizadak
+        internal void RegistrarVinculo(UsuarioVeiculo vinculo)
+        {
+            _veiculos.Add(vinculo);
         }
 
         public void Desativar() => Ativo = false;

@@ -1,6 +1,6 @@
 ﻿namespace SistemaCombustivel.Domain.Entities
 {
-    internal enum TipoUsuario
+    public enum TipoUsuario
     {
         Comum,
         Administrador
