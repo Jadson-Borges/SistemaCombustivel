@@ -1,6 +1,6 @@
 ﻿namespace SistemaCombustivel.Domain.Entities
 {
-    internal class Rota
+    public class Rota
     {
         public int Id { get; private set; }
         public int VeiculoId { get; private set; }
@@ -18,10 +18,10 @@
         public Rota(Veiculo veiculo, int mes, int ano, decimal kmRodado, TipoRota tipo, string? complemento)
         {
             if (mes is < 1 or > 12)
-                throw new ArgumentException("", nameof(mes));
+                throw new ArgumentException("Mês inválido.", nameof(mes));
 
             if (kmRodado <= 0)
-                throw new ArgumentException("", nameof(kmRodado));
+                throw new ArgumentException("A quilometragem rodada deve ser maior que zero", nameof(kmRodado));
             Veiculo = veiculo;
             VeiculoId = veiculo.Id;
             Mes = mes;

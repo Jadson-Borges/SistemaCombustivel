@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SistemaCombustivel.Domain.Entities
+﻿namespace SistemaCombustivel.Domain.Entities
 {
-    internal class DespesaMensal
+    public class DespesaMensal
     {
         public int Id { get; private set; }
         public int VeiculoId { get; private set; }

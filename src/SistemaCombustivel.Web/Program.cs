@@ -1,4 +1,6 @@
 using SistemaCombustivel.Web.Components;
+using Microsoft.EntityFrameworkCore;
+using SistemaCombustivel.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,6 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+//Adicição do Contexto do projeto!
+builder.Services.AddDbContext<AppDbContext>
+    (options => options.UseSqlServer
+    (builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
