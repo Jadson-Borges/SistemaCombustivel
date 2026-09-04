@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SistemaCombustivel.Domain.Entities
+﻿namespace SistemaCombustivel.Domain.Entities
 {
-    internal class StatusRota
+    public enum StatusRota
     {
+        Rascunho,
+        AguardandoAprovacao,
+        Aprovado,
+        Rejeitado,
+        Processado
     }
 }

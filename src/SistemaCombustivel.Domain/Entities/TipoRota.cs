@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SistemaCombustivel.Domain.Entities
+﻿namespace SistemaCombustivel.Domain.Entities
 {
-    internal class TipoRota
+    public enum TipoRota
     {
+        Funcionario,
+        Focus,
+        Manutencao
     }
 }
