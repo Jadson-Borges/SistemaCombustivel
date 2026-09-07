@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Identity;
+using SistemaCombustivel.Infrastructure.Identity;
 using SistemaCombustivel.Web.Components;
 using Microsoft.EntityFrameworkCore;
 using SistemaCombustivel.Infrastructure.Data;
@@ -14,6 +16,20 @@ builder.Services.AddDbContext<AppDbContext>
     (options => options.UseSqlServer
     (builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+    {
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase= true;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 6;
+
+    options.User.RequireUniqueEmail = true;
+
+    })
+.AddEntityFrameworkStores<AppDbContext>()
+.AddDefaultTokenProviders();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -29,6 +45,10 @@ else
 }
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseHttpsRedirection();
+
+//conexão usuarioS
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseAntiforgery();
 
