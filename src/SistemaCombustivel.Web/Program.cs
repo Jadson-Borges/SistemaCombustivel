@@ -3,6 +3,9 @@ using SistemaCombustivel.Infrastructure.Identity;
 using SistemaCombustivel.Web.Components;
 using Microsoft.EntityFrameworkCore;
 using SistemaCombustivel.Infrastructure.Data;
+using SistemaCombustivel.Application.Abstractions;
+using SistemaCombustivel.Application.Services;
+using SistemaCombustivel.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +32,13 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     })
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
+
+
+//(Application + Infrastructure)
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IServicoAutenticacao, ServicoAutenticacao>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<RegistroUsuarioService>();
 
 var app = builder.Build();
 
