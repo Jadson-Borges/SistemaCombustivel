@@ -1,7 +1,26 @@
 ﻿@page "/"
+@using System.Security.Claims
+@attribute [Authorize]
+@inject AuthenticationStateProvider AuthStateProvider
 
-<PageTitle>Home</PageTitle>
+<h3>Bem-vindo!</h3>
 
-<h1>Hello, world!</h1>
+@if (claims is not null)
+{
+    <ul>
+        @foreach (var claim in claims)
+        {
+            <li>@claim.Type = @claim.Value</li>
+        }
+    </ul>
+}
 
-Welcome to your new app.
+@code {
+    private IEnumerable<Claim>? claims;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        claims = authState.User.Claims;
+    }
+}

@@ -6,6 +6,7 @@ namespace SistemaCombustivel.Application.Abstractions
     {
         Task AdicionarAsync(Usuario usuario);
         Task<bool> ExisteEmailAsync(string email);
+        Task<Usuario?> ObterPorIdAsync(int id);
         Task SalvarAlteracoesAsync();
     }
 }

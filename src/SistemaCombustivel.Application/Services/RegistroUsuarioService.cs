@@ -28,21 +28,29 @@ namespace SistemaCombustivel.Application.Services
 
             Resultado resultadoFinal = Resultado.Ok();
 
-            await _unitOfWork.ExecutarEmTransacaoAsync(async () =>
+            try
             {
-                var usuario = new Usuario(nomeUsuario, email, TipoUsuario.Comum);
-
-                await _usuarioRepository.AdicionarAsync(usuario);
-                await _usuarioRepository.SalvarAlteracoesAsync();
-
-                var resultadoAuth = await _servicoAutenticacao.RegistrarAsync(email, senha, usuario.Id);
-
-                if (!resultadoAuth.Sucesso)
+                await _unitOfWork.ExecutarEmTransacaoAsync(async () =>
                 {
-                    resultadoFinal = Resultado.Falha(resultadoAuth.Erro!);
-                    throw new InvalidOperationException(resultadoAuth.Erro);
-                }
-            });
+                    var usuario = new Usuario(nomeUsuario, email, TipoUsuario.Comum);
+
+                    await _usuarioRepository.AdicionarAsync(usuario);
+                    await _usuarioRepository.SalvarAlteracoesAsync();
+
+                    var resultadoAuth = await _servicoAutenticacao.RegistrarAsync(email, senha, usuario.Id);
+
+                    if (!resultadoAuth.Sucesso)
+                    {
+                        resultadoFinal = Resultado.Falha(resultadoAuth.Erro!);
+                        throw new InvalidOperationException(resultadoAuth.Erro);
+                    }
+                });
+            }
+            catch (InvalidOperationException)
+            {
+                // Rollback já foi feito pelo UnitOfWork; resultadoFinal já contém o motivo da falha.
+                // bloco colocado em try catch para não entrar em loop quando ocorrer um erro não tratado
+            }
 
             return resultadoFinal;
         }

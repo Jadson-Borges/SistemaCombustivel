@@ -28,5 +28,10 @@ namespace SistemaCombustivel.Infrastructure.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<Usuario?> ObterPorIdAsync(int id)
+        {
+            return await _context.Usuarios.FindAsync(id);
+        }
     }
 }

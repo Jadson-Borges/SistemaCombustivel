@@ -1,0 +1,65 @@
+﻿@page "/login"
+@using System.ComponentModel.DataAnnotations
+@using SistemaCombustivel.Application.Services
+@inject LoginUsuarioService LoginService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Login</PageTitle>
+
+<h3>Entrar</h3>
+
+<EditForm Model="@modelo" OnValidSubmit="HandleLogin" FormName="loginForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>E-mail</label>
+        <InputText @bind-Value="modelo.Email" />
+    </div>
+
+    <div>
+        <label>Senha</label>
+        <InputText @bind-Value="modelo.Senha" type="password" />
+    </div>
+
+    <button type="submit">Entrar</button>
+</EditForm>
+
+<p>
+    Não tem conta? <a href="/registrar">Registre-se aqui</a>
+</p>
+
+@if (mensagemErro is not null)
+{
+    <p style="color:red">@mensagemErro</p>
+}
+
+@code {
+    [SupplyParameterFromForm]
+    private ModeloLogin modelo { get; set; } = new();
+
+    private string? mensagemErro;
+
+    private async Task HandleLogin()
+    {
+        var resultado = await LoginService.LoginAsync(modelo.Email, modelo.Senha);
+
+        if (!resultado.Sucesso)
+        {
+            mensagemErro = resultado.Erro;
+            return;
+        }
+
+        NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+
+    public class ModeloLogin
+    {
+        [Required(ErrorMessage = "Informe o e-mail")]
+        [EmailAddress(ErrorMessage = "E-mail inválido")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Informe a senha")]
+        public string Senha { get; set; } = string.Empty;
+    }
+}
