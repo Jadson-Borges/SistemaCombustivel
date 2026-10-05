@@ -1,0 +1,73 @@
+﻿@page "/registrar"
+@using System.ComponentModel.DataAnnotations
+@using SistemaCombustivel.Application.Services
+@inject RegistroUsuarioService RegistroService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Registrar</PageTitle>
+
+<h3>Criar conta</h3>
+
+<EditForm Model="@modelo" OnValidSubmit="HandleRegistrar" FormName="registrarForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Nome de usuario</label>
+        <InputText @bind-Value="modelo.NomeUsuario" />
+    </div>
+
+    <div>
+        <label>E-mail</label>
+        <InputText @bind-Value="modelo.Email" />
+    </div>
+
+    <div>
+        <label>Senha</label>
+        <InputText @bind-Value="modelo.Senha" type="password" />
+    </div>
+
+    <button type="submit">Registrar</button>
+</EditForm>
+
+@if (mensagemErro is not null)
+{
+    <p style="color:red">@mensagemErro</p>
+}
+
+<p>Já tem conta? <a href="/login">Entrar</a></p>
+
+@code
+{
+    [SupplyParameterFromForm]
+    private ModeloRegistro modelo { get; set; } = new();
+    private string? mensagemErro;
+
+    private async Task HandleRegistrar()
+    {
+        var resultado = await RegistroService.RegistrarAsync(
+            modelo.NomeUsuario, modelo.Email, modelo.Senha);
+
+        if (!resultado.Sucesso)
+        {
+            mensagemErro = resultado.Erro;
+            return;
+        }
+
+        NavigationManager.NavigateTo("/login");
+    }
+
+    public class ModeloRegistro
+    {
+        [Required(ErrorMessage = "Informe o nome de usuario")]
+        public string NomeUsuario { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Informe o e-mail")]
+        [EmailAddress(ErrorMessage = "E-mail inválido")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Informe a senha")]
+        [MinLength(6, ErrorMessage = "A senha deve ter ao menos 6 caracteres")]
+        public string Senha { get; set; } = string.Empty;
+    }
+}

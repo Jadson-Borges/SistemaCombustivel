@@ -1,0 +1,26 @@
+﻿@page "/"
+@using System.Security.Claims
+@attribute [Authorize]
+@inject AuthenticationStateProvider AuthStateProvider
+
+<h3>Bem-vindo!</h3>
+
+@if (claims is not null)
+{
+    <ul>
+        @foreach (var claim in claims)
+        {
+            <li>@claim.Type = @claim.Value</li>
+        }
+    </ul>
+}
+
+@code {
+    private IEnumerable<Claim>? claims;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        claims = authState.User.Claims;
+    }
+}
