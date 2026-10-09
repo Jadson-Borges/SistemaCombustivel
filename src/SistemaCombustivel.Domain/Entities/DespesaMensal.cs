@@ -38,6 +38,10 @@
             ValidadorValor(abastecimento, nameof(abastecimento));
             ValidadorValor(lavagem, nameof(lavagem));
             ValidadorValor(manutencao, nameof(manutencao));
+
+            Abastecimento = abastecimento;
+            Lavagem = lavagem;
+            Manutencao = manutencao;
         }
 
         private static void ValidadorValor(decimal valor, string nomeCampo)
