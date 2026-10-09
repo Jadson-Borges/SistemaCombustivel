@@ -14,17 +14,17 @@
 
     <div>
         <label>Nome de usuario</label>
-        <InputText @bind-Value="modelo.NomeUsuario" />
+        <InputText @bind-Value="modelo!.NomeUsuario" />
     </div>
 
     <div>
         <label>E-mail</label>
-        <InputText @bind-Value="modelo.Email" />
+        <InputText @bind-Value="modelo!.Email" />
     </div>
 
     <div>
         <label>Senha</label>
-        <InputText @bind-Value="modelo.Senha" type="password" />
+        <InputText @bind-Value="modelo!.Senha" type="password" />
     </div>
 
     <button type="submit">Registrar</button>
@@ -40,13 +40,15 @@
 @code
 {
     [SupplyParameterFromForm]
-    private ModeloRegistro modelo { get; set; } = new();
+    private ModeloRegistro? modelo { get; set; }
     private string? mensagemErro;
+
+    protected override void OnInitialized() => modelo ??= new();
 
     private async Task HandleRegistrar()
     {
         var resultado = await RegistroService.RegistrarAsync(
-            modelo.NomeUsuario, modelo.Email, modelo.Senha);
+            modelo!.NomeUsuario, modelo!.Email, modelo!.Senha);
 
         if (!resultado.Sucesso)
         {

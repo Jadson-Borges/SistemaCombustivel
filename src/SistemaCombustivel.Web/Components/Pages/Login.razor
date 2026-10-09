@@ -14,12 +14,12 @@
 
     <div>
         <label>E-mail</label>
-        <InputText @bind-Value="modelo.Email" />
+        <InputText @bind-Value="modelo!.Email" />
     </div>
 
     <div>
         <label>Senha</label>
-        <InputText @bind-Value="modelo.Senha" type="password" />
+        <InputText @bind-Value="modelo!.Senha" type="password" />
     </div>
 
     <button type="submit">Entrar</button>
@@ -36,13 +36,15 @@
 
 @code {
     [SupplyParameterFromForm]
-    private ModeloLogin modelo { get; set; } = new();
+    private ModeloLogin? modelo { get; set; }
 
     private string? mensagemErro;
 
+    protected override void OnInitialized() => modelo ??= new();
+
     private async Task HandleLogin()
     {
-        var resultado = await LoginService.LoginAsync(modelo.Email, modelo.Senha);
+        var resultado = await LoginService.LoginAsync(modelo!.Email, modelo!.Senha);
 
         if (!resultado.Sucesso)
         {
