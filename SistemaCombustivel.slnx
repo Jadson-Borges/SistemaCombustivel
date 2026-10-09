@@ -7,4 +7,7 @@
     <Project Path="src/SistemaCombustivel.Web.Client/SistemaCombustivel.Web.Client.csproj" />
     <Project Path="src/SistemaCombustivel.Web/SistemaCombustivel.Web.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SistemaCombustivel.Domain.Tests/SistemaCombustivel.Domain.Tests.csproj" />
+  </Folder>
 </Solution>
