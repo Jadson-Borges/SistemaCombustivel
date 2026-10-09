@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using SistemaCombustivel.Infrastructure.Identity;
 using SistemaCombustivel.Web.Components;
@@ -13,6 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+builder.Services.AddCascadingAuthenticationState();
 
 //Adicição do Contexto do projeto!
 builder.Services.AddDbContext<AppDbContext>
@@ -75,5 +78,11 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(SistemaCombustivel.Web.Client._Imports).Assembly);
+
+app.MapPost("/logout", async (IServicoAutenticacao servicoAutenticacao, [FromForm] string returnUrl) =>
+{
+    await servicoAutenticacao.LogoutAsync();
+    return Results.LocalRedirect($"~/{returnUrl}");
+}).RequireAuthorization();
 
 app.Run();

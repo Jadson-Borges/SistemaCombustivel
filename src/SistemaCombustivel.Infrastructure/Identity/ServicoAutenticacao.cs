@@ -49,5 +49,8 @@ namespace SistemaCombustivel.Infrastructure.Identity
 
             return ResultadoAutenticacao.Ok(string.Empty);
         }
+
+        public async Task LogoutAsync () => await _signInManager.SignOutAsync();
+
     }
 }
