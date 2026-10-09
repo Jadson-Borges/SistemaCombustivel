@@ -61,7 +61,7 @@
         {
             GarantirQueEstaEm(StatusRota.AguardandoAprovacao, "rejeitar");
 
-            if (!string.IsNullOrEmpty(motivo))
+            if (string.IsNullOrWhiteSpace(motivo))
                 throw new ArgumentException("O motivo da rejeição é obrigatorio.");
 
             Status = StatusRota.Rejeitado;
