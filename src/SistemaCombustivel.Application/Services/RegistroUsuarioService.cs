@@ -20,7 +20,11 @@ namespace SistemaCombustivel.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Resultado> RegistrarAsync(string nomeUsuario, string email, string senha)
+        public Task<Resultado> RegistrarAsync(string nomeUsuario, string email, string senha)
+            => CriarAsync(nomeUsuario, email, senha, TipoUsuario.Comum);
+
+        public async Task<Resultado> CriarAsync(string nomeUsuario, string email, string senha, TipoUsuario tipo)
+        
         {
             var emailJaExiste = await _usuarioRepository.ExisteEmailAsync(email);
             if (emailJaExiste)

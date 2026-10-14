@@ -24,6 +24,11 @@ namespace SistemaCombustivel.Infrastructure.Repositories
             return await _context.Usuarios.AnyAsync(u => u.Email == email);
         }
 
+        public async Task<bool> ExisteAdministradorAsync()
+        {
+            return await _context.Usuarios.AnyAsync(u => u.Tipo == TipoUsuario.Administrador && u.Ativo);
+        }
+
         public async Task SalvarAlteracoesAsync()
         {
             await _context.SaveChangesAsync();

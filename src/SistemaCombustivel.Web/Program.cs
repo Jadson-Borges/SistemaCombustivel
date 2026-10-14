@@ -58,8 +58,28 @@ builder.Services.AddScoped<IServicoAutenticacao, ServicoAutenticacao>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<RegistroUsuarioService>();
 builder.Services.AddScoped<LoginUsuarioService>();
+builder.Services.AddScoped<AdministradorInicialService>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var email = app.Configuration["Seed:Admin:Email"];
+    var senha = app.Configuration["Seed:Admin:Senha"];
+
+    if (!string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(senha))
+    {
+        var nome = app.Configuration["Seed:Admin:Nome"] ?? "Administrador";
+        var servico = scope.ServiceProvider.GetRequiredService<AdministradorInicialService>();
+        var resultado = await servico.GarantirAsync(nome, email, senha);
+
+        if (!resultado.Sucesso)
+        {
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            logger.LogError("Falha ao criar o administrador inicial: {Erro}", resultado.Erro);
+        }
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
