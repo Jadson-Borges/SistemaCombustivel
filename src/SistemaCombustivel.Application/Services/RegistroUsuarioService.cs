@@ -26,7 +26,7 @@ namespace SistemaCombustivel.Application.Services
             if (emailJaExiste)
                 return Resultado.Falha("Já existe um usuário cadastrado com este e-mail.");
 
-            Resultado resultadoFinal = Resultado.Ok();
+            string? erroDeAutenticacao = null;
 
             try
             {
@@ -41,18 +41,21 @@ namespace SistemaCombustivel.Application.Services
 
                     if (!resultadoAuth.Sucesso)
                     {
-                        resultadoFinal = Resultado.Falha(resultadoAuth.Erro!);
-                        throw new InvalidOperationException(resultadoAuth.Erro);
+                        erroDeAutenticacao = resultadoAuth.Erro;
+                        throw new FalhaNoRegistroException(); //Falha no rollback da transação
                     }
+
                 });
             }
-            catch (InvalidOperationException)
+            catch (FalhaNoRegistroException)
             {
-                // Rollback já foi feito pelo UnitOfWork; resultadoFinal já contém o motivo da falha.
-                // bloco colocado em try catch para não entrar em loop quando ocorrer um erro não tratado
+                return Resultado.Falha(erroDeAutenticacao!);
             }
 
-            return resultadoFinal;
+            return Resultado.Ok();
         }
+
+        // Exceção interna: só serve para sinalizar "desfaça a transação".
+        private sealed class FalhaNoRegistroException : Exception { }
     }
 }
