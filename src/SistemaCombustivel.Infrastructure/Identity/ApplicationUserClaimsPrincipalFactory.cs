@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Options;
 using SistemaCombustivel.Application.Abstractions;
 using System.Security.Claims;
-
+using SistemaCombustivel.Application.Common;
 
 namespace SistemaCombustivel.Infrastructure.Identity
 {
@@ -29,8 +29,8 @@ namespace SistemaCombustivel.Infrastructure.Identity
 
             if (usuario is not null)
             {
-                identity.AddClaim(new Claim("TipoUsuario", usuario.Tipo.ToString()));
-                identity.AddClaim(new Claim("UsuarioId", usuario.Id.ToString()));
+                identity.AddClaim(new Claim(Autorizacao.ClaimTipoUsuario, usuario.Tipo.ToString()));
+                identity.AddClaim(new Claim(Autorizacao.ClaimUsuarioId, usuario.Id.ToString()));
             }
 
             return principal;
