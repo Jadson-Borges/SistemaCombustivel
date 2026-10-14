@@ -7,6 +7,8 @@ using SistemaCombustivel.Infrastructure.Data;
 using SistemaCombustivel.Application.Abstractions;
 using SistemaCombustivel.Application.Services;
 using SistemaCombustivel.Infrastructure.Repositories;
+using SistemaCombustivel.Application.Common;
+using SistemaCombustivel.Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +42,12 @@ builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/login";
     options.AccessDeniedPath = "/acesso-negado";
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(Autorizacao.PoiticaAdministrador, policy =>
+    policy.RequireClaim(Autorizacao.ClaimTipoUsuario, TipoUsuario.Administrador.ToString()));
 });
 
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();

@@ -1,0 +1,13 @@
+﻿@page "/Admin"
+@using SistemaCombustivel.Application.Common;
+@attribute [Authorize(Policy = Autorizacao.PoiticaAdministrador)]
+
+<PageTitle>Administração</PageTitle>
+
+<h3>Painel Administrativo</h3>
+<p>Área exclusiva Administradores.</p>
+
+
+@code {
+
+}
