@@ -18,7 +18,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
     <ProjectReference Include="..\SistemaCombustivel.Web.Client\SistemaCombustivel.Web.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.13" />
   </ItemGroup>
@@ -26,6 +25,8 @@
   <ItemGroup>
     <ProjectReference Include="..\SistemaCombustivel.Infrastructure\SistemaCombustivel.Infrastructure.csproj" />
     <ProjectReference Include="..\SistemaCombustivel.Shared\SistemaCombustivel.Shared.csproj" />
+    <ProjectReference Include="..\SistemaCombustivel.Domain\SistemaCombustivel.Domain.csproj" />
+    <ProjectReference Include="..\SistemaCombustivel.Application\SistemaCombustivel.Application.csproj" />
   </ItemGroup>
 
 </Project>
