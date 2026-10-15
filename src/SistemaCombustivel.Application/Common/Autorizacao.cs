@@ -4,6 +4,6 @@
     {
         public const string ClaimTipoUsuario = "TipoUsuario";
         public const string ClaimUsuarioId = "UsuarioId";
-        public const string PoiticaAdministrador = "Administrador";
+        public const string PoliticaAdministrador = "Administrador";
     }
 }

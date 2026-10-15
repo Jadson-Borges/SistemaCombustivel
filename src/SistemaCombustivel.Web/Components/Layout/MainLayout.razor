@@ -6,7 +6,7 @@
         <header>
             <span>Olá, @context.User.Identity?.Name</span>
 
-            <AuthorizeView Policy="@Autorizacao.PoiticaAdministrador" Context="admin">
+            <AuthorizeView Policy="@Autorizacao.PoliticaAdministrador" Context="admin">
                 <a href="/admin">Administração</a>
             </AuthorizeView>
 

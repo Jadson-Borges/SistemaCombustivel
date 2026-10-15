@@ -47,7 +47,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy(Autorizacao.PoiticaAdministrador, policy =>
+    options.AddPolicy(Autorizacao.PoliticaAdministrador, policy =>
     policy.RequireClaim(Autorizacao.ClaimTipoUsuario, TipoUsuario.Administrador.ToString()));
 });
 
