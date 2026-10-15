@@ -9,6 +9,7 @@ using SistemaCombustivel.Application.Services;
 using SistemaCombustivel.Infrastructure.Repositories;
 using SistemaCombustivel.Application.Common;
 using SistemaCombustivel.Domain.Entities;
+using SistemaCombustivel.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +60,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<RegistroUsuarioService>();
 builder.Services.AddScoped<LoginUsuarioService>();
 builder.Services.AddScoped<AdministradorInicialService>();
+builder.Services.ConfigurarInfra();
 
 var app = builder.Build();
 
