@@ -36,7 +36,7 @@ namespace SistemaCombustivel.Application.Services
             {
                 await _unitOfWork.ExecutarEmTransacaoAsync(async () =>
                 {
-                    var usuario = new Usuario(nomeUsuario, email, TipoUsuario.Comum);
+                    var usuario = new Usuario(nomeUsuario, email, tipo);
 
                     await _usuarioRepository.AdicionarAsync(usuario);
                     await _usuarioRepository.SalvarAlteracoesAsync();
