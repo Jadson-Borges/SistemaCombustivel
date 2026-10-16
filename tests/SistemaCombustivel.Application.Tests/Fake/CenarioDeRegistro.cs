@@ -1,4 +1,6 @@
-﻿using SistemaCombustivel.Application.Services;
+﻿using SistemaCombustivel.Application.Usuarios.Commands.CriarAdministradorInicial;
+using SistemaCombustivel.Application.Usuarios.Commands.CriarUsuario;
+using SistemaCombustivel.Application.Usuarios.Commands.RegistrarUsuario;
 
 namespace SistemaCombustivel.Application.Tests.Fakes;
 
@@ -8,13 +10,14 @@ public sealed class CenarioDeRegistro
     public FakeServicoAutenticacao Autenticacao { get; } = new();
     public FakeUnitOfWork UnitOfWork { get; } = new();
 
-    public RegistroUsuarioService Registro { get; }
-    public AdministradorInicialService AdministradorInicial { get; }
+    public CriarUsuarioCommandHandler CriarUsuario { get; }
+    public RegistrarUsuarioCommandHandler Registrar { get; }
+    public CriarAdministradorInicialCommandHandler AdministradorInicial { get; }
 
     public CenarioDeRegistro()
     {
-        // Serviços REAIS, recebendo dependências FALSAS.
-        Registro = new RegistroUsuarioService(Repositorio, Autenticacao, UnitOfWork);
-        AdministradorInicial = new AdministradorInicialService(Repositorio, Registro);
+        CriarUsuario = new CriarUsuarioCommandHandler(Repositorio, Autenticacao, UnitOfWork);
+        Registrar = new RegistrarUsuarioCommandHandler(CriarUsuario);
+        AdministradorInicial = new CriarAdministradorInicialCommandHandler(Repositorio, CriarUsuario);
     }
 }

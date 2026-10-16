@@ -1,33 +1,22 @@
 ﻿using SistemaCombustivel.Application.Tests.Fakes;
+using SistemaCombustivel.Application.Usuarios.Commands.CriarUsuario;
 using SistemaCombustivel.Domain.Entities;
 
 namespace SistemaCombustivel.Application.Tests;
 
-public class RegistroUsuarioServiceTests
+public class CriarUsuarioCommandHandlerTests
 {
-    [Fact]
-    public async Task RegistrarAsync_ComDadosValidos_CriaUsuarioComum()
-    {
-        // Arrange
-        var cenario = new CenarioDeRegistro();
-
-        // Act
-        var resultado = await cenario.Registro.RegistrarAsync("Maria", "maria@teste.com", "Senha123");
-
-        // Assert
-        Assert.True(resultado.Sucesso);
-        var usuario = Assert.Single(cenario.Repositorio.Usuarios);
-        Assert.Equal(TipoUsuario.Comum, usuario.Tipo);
-        Assert.Equal("maria@teste.com", usuario.Email);
-    }
+    private static CriarUsuarioCommand Comando(
+        string email = "maria@teste.com", TipoUsuario tipo = TipoUsuario.Comum) =>
+        new("Maria", email, "Senha123", tipo);
 
     [Fact]
-    public async Task CriarAsync_ComTipoAdministrador_CriaUsuarioAdministrador()
+    public async Task Handle_ComTipoAdministrador_CriaUsuarioAdministrador()
     {
         var cenario = new CenarioDeRegistro();
 
-        var resultado = await cenario.Registro.CriarAsync(
-            "Admin", "admin@teste.com", "Senha123", TipoUsuario.Administrador);
+        var resultado = await cenario.CriarUsuario.Handle(
+            Comando("admin@teste.com", TipoUsuario.Administrador), CancellationToken.None);
 
         Assert.True(resultado.Sucesso);
         var usuario = Assert.Single(cenario.Repositorio.Usuarios);
@@ -35,11 +24,11 @@ public class RegistroUsuarioServiceTests
     }
 
     [Fact]
-    public async Task RegistrarAsync_ComDadosValidos_RegistraCredenciaisEConfirmaATransacao()
+    public async Task Handle_ComDadosValidos_RegistraCredenciaisEConfirmaATransacao()
     {
         var cenario = new CenarioDeRegistro();
 
-        await cenario.Registro.RegistrarAsync("Maria", "maria@teste.com", "Senha123");
+        await cenario.CriarUsuario.Handle(Comando(), CancellationToken.None);
 
         var registro = Assert.Single(cenario.Autenticacao.Registros);
         Assert.Equal("maria@teste.com", registro.Email);
@@ -49,12 +38,12 @@ public class RegistroUsuarioServiceTests
     }
 
     [Fact]
-    public async Task RegistrarAsync_ComEmailJaCadastrado_DevolveFalhaESemAbrirTransacao()
+    public async Task Handle_ComEmailJaCadastrado_DevolveFalhaESemAbrirTransacao()
     {
         var cenario = new CenarioDeRegistro();
-        cenario.Repositorio.Usuarios.Add(new Usuario("João", "joao@teste.com", TipoUsuario.Comum));
+        cenario.Repositorio.Usuarios.Add(new Usuario("João", "maria@teste.com", TipoUsuario.Comum));
 
-        var resultado = await cenario.Registro.RegistrarAsync("Outro João", "joao@teste.com", "Senha123");
+        var resultado = await cenario.CriarUsuario.Handle(Comando(), CancellationToken.None);
 
         Assert.False(resultado.Sucesso);
         Assert.Contains("e-mail", resultado.Erro);
@@ -63,13 +52,13 @@ public class RegistroUsuarioServiceTests
     }
 
     [Fact]
-    public async Task RegistrarAsync_QuandoAAutenticacaoFalha_DevolveFalhaEDesfazATransacao()
+    public async Task Handle_QuandoAAutenticacaoFalha_DevolveFalhaEDesfazATransacao()
     {
         var cenario = new CenarioDeRegistro();
         cenario.Autenticacao.FalharNoRegistro = true;
         cenario.Autenticacao.MensagemDeErro = "Senha fraca.";
 
-        var resultado = await cenario.Registro.RegistrarAsync("Maria", "maria@teste.com", "123");
+        var resultado = await cenario.CriarUsuario.Handle(Comando(), CancellationToken.None);
 
         Assert.False(resultado.Sucesso);
         Assert.Equal("Senha fraca.", resultado.Erro);
@@ -78,13 +67,13 @@ public class RegistroUsuarioServiceTests
     }
 
     [Fact]
-    public async Task RegistrarAsync_QuandoOcorreErroInesperado_PropagaAExcecaoEmVezDeEngoli()
+    public async Task Handle_QuandoOcorreErroInesperado_PropagaAExcecaoEmVezDeEngoli()
     {
         var cenario = new CenarioDeRegistro();
         cenario.Repositorio.ExcecaoAoSalvar = new InvalidOperationException("falha de banco");
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            cenario.Registro.RegistrarAsync("Maria", "maria@teste.com", "Senha123"));
+            cenario.CriarUsuario.Handle(Comando(), CancellationToken.None));
 
         Assert.Equal(1, cenario.UnitOfWork.Rollbacks);
     }
