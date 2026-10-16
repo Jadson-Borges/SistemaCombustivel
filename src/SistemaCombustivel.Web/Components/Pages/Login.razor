@@ -1,7 +1,7 @@
 ﻿@page "/login"
 @using System.ComponentModel.DataAnnotations
-@using SistemaCombustivel.Application.Services
-@inject LoginUsuarioService LoginService
+@using SistemaCombustivel.Application.Usuarios.Commands.LoginUsuario
+@inject LoginUsuarioCommandHandler LoginUsuario
 @inject NavigationManager NavigationManager
 
 <PageTitle>Login</PageTitle>
@@ -44,7 +44,8 @@
 
     private async Task HandleLogin()
     {
-        var resultado = await LoginService.LoginAsync(modelo!.Email, modelo!.Senha);
+       var resultado = await LoginUsuario.Handle(
+    new LoginUsuarioCommand(modelo!.Email, modelo.Senha), CancellationToken.None);
 
         if (!resultado.Sucesso)
         {

@@ -1,17 +1,17 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SistemaCombustivel.Application;
 using SistemaCombustivel.Application.Abstractions;
 using SistemaCombustivel.Application.Common;
-using SistemaCombustivel.Application.Services;
 using SistemaCombustivel.Application.Usuarios.Commands.CriarAdministradorInicial;
+using SistemaCombustivel.Application.Usuarios.Commands.LogoutUsuario;
 using SistemaCombustivel.Domain.Entities;
 using SistemaCombustivel.Infrastructure;
 using SistemaCombustivel.Infrastructure.Data;
 using SistemaCombustivel.Infrastructure.Identity;
 using SistemaCombustivel.Infrastructure.Repositories;
 using SistemaCombustivel.Web.Components;
-using SistemaCombustivel.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,7 +58,7 @@ builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, Applica
 //(Application + Infrastructure)
 builder.Services.ConfigurarApplication();
 builder.Services.ConfigurarInfra();
-builder.Services.AddScoped<LoginUsuarioService>();
+
 
 var app = builder.Build();
 
@@ -111,9 +111,9 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(SistemaCombustivel.Web.Client._Imports).Assembly);
 
-app.MapPost("/logout", async (IServicoAutenticacao servicoAutenticacao, [FromForm] string returnUrl) =>
+app.MapPost("/logout", async (LogoutUsuarioCommandHandler handler, [FromForm] string returnUrl, CancellationToken c) =>
 {
-    await servicoAutenticacao.LogoutAsync();
+    await handler.Handle(new LogoutUsuarioCommand(), c);
     return Results.LocalRedirect($"~/{returnUrl}");
 }).RequireAuthorization();
 
