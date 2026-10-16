@@ -11,6 +11,7 @@ using SistemaCombustivel.Infrastructure.Data;
 using SistemaCombustivel.Infrastructure.Identity;
 using SistemaCombustivel.Infrastructure.Repositories;
 using SistemaCombustivel.Web.Components;
+using SistemaCombustivel.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,11 +56,9 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
 
 //(Application + Infrastructure)
-builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-builder.Services.AddScoped<IServicoAutenticacao, ServicoAutenticacao>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<LoginUsuarioService>();
+builder.Services.ConfigurarApplication();
 builder.Services.ConfigurarInfra();
+builder.Services.AddScoped<LoginUsuarioService>();
 
 var app = builder.Build();
 

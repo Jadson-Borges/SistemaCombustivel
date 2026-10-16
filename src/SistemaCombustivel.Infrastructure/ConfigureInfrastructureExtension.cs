@@ -1,9 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SistemaCombustivel.Application.Abstractions;
 using SistemaCombustivel.Application.Identity;
 using SistemaCombustivel.Application.Usuarios.Commands.CriarAdministradorInicial;
 using SistemaCombustivel.Application.Usuarios.Commands.CriarUsuario;
 using SistemaCombustivel.Application.Usuarios.Commands.RegistrarUsuario;
+using SistemaCombustivel.Infrastructure.Data;
 using SistemaCombustivel.Infrastructure.Identity;
+using SistemaCombustivel.Infrastructure.Repositories;
 
 namespace SistemaCombustivel.Infrastructure
 {
@@ -13,11 +16,10 @@ namespace SistemaCombustivel.Infrastructure
         {
             public IServiceCollection ConfigurarInfra()
             {
+                ServiceCollection.AddScoped<IUsuarioRepository, UsuarioRepository>();
+                ServiceCollection.AddScoped<IServicoAutenticacao, ServicoAutenticacao>();
+                ServiceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
                 ServiceCollection.AddScoped<IUserRepository, UserRepository>();
-                ServiceCollection.AddTransient<BuscarUserQueryHandler>();
-                ServiceCollection.AddTransient<CriarUsuarioCommandHandler>();
-                ServiceCollection.AddTransient<RegistrarUsuarioCommandHandler>();
-                ServiceCollection.AddTransient<CriarAdministradorInicialCommandHandler>();
 
                 return ServiceCollection;
             }

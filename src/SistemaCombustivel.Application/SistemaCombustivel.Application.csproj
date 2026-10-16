@@ -3,6 +3,10 @@
   <ItemGroup>
     <ProjectReference Include="..\SistemaCombustivel.Domain\SistemaCombustivel.Domain.csproj" />
   </ItemGroup>
+	
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.13" />
+  </ItemGroup>
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
