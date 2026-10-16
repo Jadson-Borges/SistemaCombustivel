@@ -4,11 +4,18 @@ namespace SistemaCombustivel.Application.Tests.Fakes;
 
 public class FakeServicoAutenticacao : IServicoAutenticacao
 {
+    // Registro
     public bool FalharNoRegistro { get; set; }
     public string MensagemDeErro { get; set; } = "Senha inválida.";
-
-    // O que foi registrado (para o teste conferir depois).
     public List<(string Email, string Senha, int UsuarioId)> Registros { get; } = new();
+
+    // Login
+    public bool FalharNoLogin { get; set; }
+    public string MensagemDeErroLogin { get; set; } = "E-mail ou senha inválidos.";
+    public List<(string Email, string Senha)> Logins { get; } = new();
+
+    // Logout
+    public int Logouts { get; private set; }
 
     public Task<ResultadoAutenticacao> RegistrarAsync(string email, string senha, int usuarioId)
     {
@@ -19,9 +26,18 @@ public class FakeServicoAutenticacao : IServicoAutenticacao
         return Task.FromResult(ResultadoAutenticacao.Ok("id-do-identity-fake"));
     }
 
-    // Não usados por estes testes: se alguém chamar, o teste quebra e avisa.
-    public Task<ResultadoAutenticacao> LoginAsync(string email, string senha) =>
-        throw new NotImplementedException();
+    public Task<ResultadoAutenticacao> LoginAsync(string email, string senha)
+    {
+        if (FalharNoLogin)
+            return Task.FromResult(ResultadoAutenticacao.Falha(MensagemDeErroLogin));
 
-    public Task LogoutAsync() => throw new NotImplementedException();
+        Logins.Add((email, senha));
+        return Task.FromResult(ResultadoAutenticacao.Ok("id-do-identity-fake"));
+    }
+
+    public Task LogoutAsync()
+    {
+        Logouts++;
+        return Task.CompletedTask;
+    }
 }

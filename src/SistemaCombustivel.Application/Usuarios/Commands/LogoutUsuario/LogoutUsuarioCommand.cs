@@ -1,0 +1,3 @@
+﻿namespace SistemaCombustivel.Application.Usuarios.Commands.LogoutUsuario;
+
+public record LogoutUsuarioCommand;
