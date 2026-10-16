@@ -66,7 +66,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     //verificar nome depois pois não acho que esteja certo
-    var nome = app.Configuration["Seed:Admin:Nome"];
+    var nome = app.Configuration["Seed:Admin:Nome"] ?? "Administrador";
     var email = app.Configuration["Seed:Admin:Email"];
     var senha = app.Configuration["Seed:Admin:Senha"];
 
