@@ -1,15 +1,16 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using SistemaCombustivel.Infrastructure.Identity;
-using SistemaCombustivel.Web.Components;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SistemaCombustivel.Infrastructure.Data;
 using SistemaCombustivel.Application.Abstractions;
-using SistemaCombustivel.Application.Services;
-using SistemaCombustivel.Infrastructure.Repositories;
 using SistemaCombustivel.Application.Common;
+using SistemaCombustivel.Application.Services;
+using SistemaCombustivel.Application.Usuarios.Commands.CriarAdministradorInicial;
 using SistemaCombustivel.Domain.Entities;
 using SistemaCombustivel.Infrastructure;
+using SistemaCombustivel.Infrastructure.Data;
+using SistemaCombustivel.Infrastructure.Identity;
+using SistemaCombustivel.Infrastructure.Repositories;
+using SistemaCombustivel.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,13 +28,13 @@ builder.Services.AddDbContext<AppDbContext>
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase= true;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequiredLength = 6;
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequiredLength = 6;
 
-    options.User.RequireUniqueEmail = true;
+        options.User.RequireUniqueEmail = true;
 
     })
 .AddEntityFrameworkStores<AppDbContext>()
@@ -57,23 +58,25 @@ builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, Applica
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IServicoAutenticacao, ServicoAutenticacao>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<RegistroUsuarioService>();
 builder.Services.AddScoped<LoginUsuarioService>();
-builder.Services.AddScoped<AdministradorInicialService>();
 builder.Services.ConfigurarInfra();
 
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+    //verificar nome depois pois não acho que esteja certo
+    var nome = app.Configuration["Seed:Admin:NomeUsuario"];
     var email = app.Configuration["Seed:Admin:Email"];
     var senha = app.Configuration["Seed:Admin:Senha"];
 
+
     if (!string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(senha))
     {
-        var nome = app.Configuration["Seed:Admin:Nome"] ?? "Administrador";
-        var servico = scope.ServiceProvider.GetRequiredService<AdministradorInicialService>();
-        var resultado = await servico.GarantirAsync(nome, email, senha);
+        
+        var handler = scope.ServiceProvider.GetRequiredService<CriarAdministradorInicialCommandHandler>();
+        var resultado = await handler.Handle(
+            new CriarAdministradorInicialCommand(nome, email, senha), CancellationToken.None);
 
         if (!resultado.Sucesso)
         {

@@ -1,7 +1,7 @@
 ﻿@page "/registrar"
 @using System.ComponentModel.DataAnnotations
-@using SistemaCombustivel.Application.Services
-@inject RegistroUsuarioService RegistroService
+@using SistemaCombustivel.Application.Usuarios.Commands.RegistrarUsuario
+@inject RegistrarUsuarioCommandHandler RegistrarUsuario
 @inject NavigationManager NavigationManager
 
 <PageTitle>Registrar</PageTitle>
@@ -47,8 +47,9 @@
 
     private async Task HandleRegistrar()
     {
-        var resultado = await RegistroService.RegistrarAsync(
-            modelo!.NomeUsuario, modelo!.Email, modelo!.Senha);
+        var resultado = await RegistrarUsuario.Handle(
+    new RegistrarUsuarioCommand(modelo!.NomeUsuario, modelo.Email, modelo.Senha),
+    CancellationToken.None);
 
         if (!resultado.Sucesso)
         {
