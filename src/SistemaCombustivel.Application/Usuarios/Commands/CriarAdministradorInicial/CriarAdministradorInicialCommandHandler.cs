@@ -11,7 +11,7 @@ public class CriarAdministradorInicialCommandHandler(
 {
     public async Task<Resultado> Handle(CriarAdministradorInicialCommand command, CancellationToken c)
     {
-        if (await usuarioRepository.ExisteAdministradorAsync())
+        if (await usuarioRepository.ExisteAdministradorAsync(c))
             return Resultado.Ok();   // já existe: não faz nada (idempotente)
 
         return await criarUsuario.Handle(

@@ -12,22 +12,23 @@ namespace SistemaCombustivel.Infrastructure.Data
             _context = context;
         }
 
-        public async Task ExecutarEmTransacaoAsync(Func<Task> operacao)
+        public async Task ExecutarEmTransacaoAsync(Func<Task> operacao, CancellationToken c)
         {
             var strategy = _context.Database.CreateExecutionStrategy();
 
             await strategy.ExecuteAsync(async () =>
             {
-                await using var transacao = await _context.Database.BeginTransactionAsync();
+                await using var transacao = await _context.Database.BeginTransactionAsync(c);
 
                 try
                 {
                     await operacao();
-                    await transacao.CommitAsync();
+                    await transacao.CommitAsync(c);
                 }
                 catch
                 {
-                    await transacao.RollbackAsync();
+                    // Token novo: se o original foi cancelado, o rollback não pode ser abortado junto.
+                    await transacao.RollbackAsync(CancellationToken.None);
                     throw;
                 }
             });

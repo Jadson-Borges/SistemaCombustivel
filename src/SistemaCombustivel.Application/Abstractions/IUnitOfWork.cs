@@ -2,6 +2,6 @@
 {
     public interface IUnitOfWork
     {
-        Task ExecutarEmTransacaoAsync(Func<Task> operacao);
+        Task ExecutarEmTransacaoAsync(Func<Task> operacao, CancellationToken c);
     }
 }
