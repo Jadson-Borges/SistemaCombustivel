@@ -72,10 +72,10 @@ using (var scope = app.Services.CreateScope())
 
     if (!string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(senha))
     {
-        
+
         var handler = scope.ServiceProvider.GetRequiredService<CriarAdministradorInicialCommandHandler>();
         var resultado = await handler.Handle(
-            new CriarAdministradorInicialCommand(nome, email, senha), CancellationToken.None);
+    new CriarAdministradorInicialCommand(nome, email, senha), app.Lifetime.ApplicationStopping);
 
         if (!resultado.Sucesso)
         {
