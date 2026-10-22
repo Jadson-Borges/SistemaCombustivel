@@ -1,6 +1,4 @@
-﻿using SistemaCombustivel.Domain.Identity;
-
-namespace SistemaCombustivel.Application.Identity
+﻿namespace SistemaCombustivel.Application.Identity
 {
     public interface IUserRepository
     {

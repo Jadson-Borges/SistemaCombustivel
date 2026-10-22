@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SistemaCombustivel.Application.Identity;
-using SistemaCombustivel.Domain.Identity;
 
 namespace SistemaCombustivel.Infrastructure.Identity
 {
