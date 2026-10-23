@@ -24,8 +24,9 @@ namespace SistemaCombustivel.Infrastructure.Identity
         {
             var principal = await base.CreateAsync(user);
             var identity = (ClaimsIdentity)principal.Identity!;
-
-            var usuario = await _usuarioRepository.ObterPorIdAsync(user.UsuarioId);
+            
+            // A factory do Identity não recebe CancellationToken, então não há token para repassar.
+            var usuario = await _usuarioRepository.ObterPorIdAsync(user.UsuarioId, CancellationToken.None);
 
             if (usuario is not null)
             {

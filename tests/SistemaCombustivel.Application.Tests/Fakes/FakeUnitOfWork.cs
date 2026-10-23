@@ -7,9 +7,13 @@ public class FakeUnitOfWork : IUnitOfWork
     public int TransacoesIniciadas { get; private set; }
     public int Commits { get; private set; }
     public int Rollbacks { get; private set; }
+    public List<CancellationToken> TokensRecebidos { get; } = new();
 
-    public async Task ExecutarEmTransacaoAsync(Func<Task> operacao)
+    public async Task ExecutarEmTransacaoAsync(Func<Task> operacao, CancellationToken c)
     {
+        TokensRecebidos.Add(c);
+        c.ThrowIfCancellationRequested();   // como o BeginTransactionAsync real
+
         TransacoesIniciadas++;
 
         try
@@ -19,8 +23,8 @@ public class FakeUnitOfWork : IUnitOfWork
         }
         catch
         {
-            Rollbacks++;   // imita o banco desfazendo a transação
-            throw;         // e o erro continua subindo, como no UnitOfWork real
+            Rollbacks++;
+            throw;
         }
     }
 }

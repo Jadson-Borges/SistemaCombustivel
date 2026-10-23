@@ -9,10 +9,9 @@ public class CriarUsuarioCommandHandler(
     IServicoAutenticacao servicoAutenticacao,
     IUnitOfWork unitOfWork)
 {
-    // PENDÊNCIA: o CancellationToken ainda não é repassado, pois as interfaces atuais não o aceitam.
     public async Task<Resultado> Handle(CriarUsuarioCommand command, CancellationToken c)
     {
-        if (await usuarioRepository.ExisteEmailAsync(command.Email))
+        if (await usuarioRepository.ExisteEmailAsync(command.Email, c))
             return Resultado.Falha("Já existe um usuário cadastrado com este e-mail.");
 
         string? erroDeAutenticacao = null;
@@ -23,18 +22,18 @@ public class CriarUsuarioCommandHandler(
             {
                 var usuario = new Usuario(command.NomeUsuario, command.Email, command.Tipo);
 
-                await usuarioRepository.AdicionarAsync(usuario);
-                await usuarioRepository.SalvarAlteracoesAsync();
+                await usuarioRepository.AdicionarAsync(usuario, c);
+                await usuarioRepository.SalvarAlteracoesAsync(c);
 
                 var resultadoAuth = await servicoAutenticacao.RegistrarAsync(
-                    command.Email, command.Senha, usuario.Id);
+                    command.Email, command.Senha, usuario.Id);   // o Identity não aceita token
 
                 if (!resultadoAuth.Sucesso)
                 {
                     erroDeAutenticacao = resultadoAuth.Erro;
                     throw new FalhaNoRegistroException();   // força o rollback da transação
                 }
-            });
+            }, c);
         }
         catch (FalhaNoRegistroException)
         {
