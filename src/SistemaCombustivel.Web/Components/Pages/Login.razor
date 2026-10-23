@@ -4,35 +4,46 @@
 @inject LoginUsuarioCommandHandler LoginUsuario
 @inject NavigationManager NavigationManager
 
-<PageTitle>Login</PageTitle>
+<PageTitle>Entrar</PageTitle>
 
-<h3>Entrar</h3>
+<div class="row justify-content-center">
+    <div class="col-12 col-sm-10 col-md-7 col-lg-5 col-xl-4">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h4 mb-4">Entrar</h1>
 
-<EditForm Model="@modelo" OnValidSubmit="HandleLogin" FormName="loginForm">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+                @if (mensagemErro is not null)
+                {
+                    <div class="alert alert-danger" role="alert">@mensagemErro</div>
+                }
 
-    <div>
-        <label>E-mail</label>
-        <InputText @bind-Value="modelo!.Email" />
+                <EditForm Model="@modelo" OnValidSubmit="HandleLogin" FormName="loginForm">
+                    <DataAnnotationsValidator />
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-mail</label>
+                        <InputText id="email" class="form-control" autocomplete="username"
+                                   @bind-Value="modelo!.Email" />
+                        <ValidationMessage For="@(() => modelo!.Email)" class="text-danger small" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="senha" class="form-label">Senha</label>
+                        <InputText id="senha" class="form-control" type="password" autocomplete="current-password"
+                                   @bind-Value="modelo!.Senha" />
+                        <ValidationMessage For="@(() => modelo!.Senha)" class="text-danger small" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                </EditForm>
+
+                <p class="text-center text-muted mt-3 mb-0">
+                    Não tem conta? <a href="/registrar">Registre-se aqui</a>
+                </p>
+            </div>
+        </div>
     </div>
-
-    <div>
-        <label>Senha</label>
-        <InputText @bind-Value="modelo!.Senha" type="password" />
-    </div>
-
-    <button type="submit">Entrar</button>
-</EditForm>
-
-<p>
-    Não tem conta? <a href="/registrar">Registre-se aqui</a>
-</p>
-
-@if (mensagemErro is not null)
-{
-    <p style="color:red">@mensagemErro</p>
-}
+</div>
 
 @code {
     [SupplyParameterFromForm]
@@ -44,8 +55,8 @@
 
     private async Task HandleLogin()
     {
-       var resultado = await LoginUsuario.Handle(
-    new LoginUsuarioCommand(modelo!.Email, modelo.Senha), CancellationToken.None);
+        var resultado = await LoginUsuario.Handle(
+            new LoginUsuarioCommand(modelo!.Email, modelo.Senha), CancellationToken.None);
 
         if (!resultado.Sucesso)
         {
