@@ -1,28 +1,50 @@
-﻿@using SistemaCombustivel.Application.Common;
+﻿@using SistemaCombustivel.Application.Common
 @inherits LayoutComponentBase
 
-<AuthorizeView>
-    <Authorized>
-        <header>
-            <span>Olá, @context.User.Identity?.Name</span>
+<nav class="navbar navbar-expand-md bg-dark" data-bs-theme="dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">Sistema Combustível</a>
 
-            <AuthorizeView Policy="@Autorizacao.PoliticaAdministrador" Context="admin">
-                <a href="/admin">Administração</a>
-            </AuthorizeView>
+        <AuthorizeView>
+            <Authorized>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#menuPrincipal" aria-controls="menuPrincipal"
+                        aria-expanded="false" aria-label="Alternar menu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-            <form method="post" action="/logout">
-                <AntiforgeryToken />
-                <input type="hidden" name="returnUrl" value="login" />
-                <button type="submit">Sair</button>
-            </form>
-        </header>
-    </Authorized>
-</AuthorizeView>
+                <div class="collapse navbar-collapse" id="menuPrincipal">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">Início</NavLink>
+                        </li>
 
-@Body
+                        <AuthorizeView Policy="@Autorizacao.PoliticaAdministrador" Context="admin">
+                            <li class="nav-item">
+                                <NavLink class="nav-link" href="/admin">Administração</NavLink>
+                            </li>
+                        </AuthorizeView>
+                    </ul>
+
+                    <span class="navbar-text me-3">@context.User.Identity?.Name</span>
+
+                    <form method="post" action="/logout" class="d-flex">
+                        <AntiforgeryToken />
+                        <input type="hidden" name="returnUrl" value="login" />
+                        <button type="submit" class="btn btn-outline-light btn-sm">Sair</button>
+                    </form>
+                </div>
+            </Authorized>
+        </AuthorizeView>
+    </div>
+</nav>
+
+<main class="container py-4">
+    @Body
+</main>
 
 <div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
+    Ocorreu um erro inesperado.
+    <a href="." class="reload">Recarregar</a>
     <span class="dismiss">🗙</span>
 </div>
