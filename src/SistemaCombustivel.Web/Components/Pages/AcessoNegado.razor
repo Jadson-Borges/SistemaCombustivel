@@ -1,11 +1,10 @@
 ﻿@page "/acesso-negado"
 
 <PageTitle>Acesso negado</PageTitle>
-<h3>AcessoNegado</h3>
 
-<p>Você não tem permissão para acessar essa página.</p>
-<a href="/">Voltar para o inicio</a>
+<div class="alert alert-warning" role="alert">
+    <h1 class="h4 alert-heading">Acesso negado</h1>
+    <p class="mb-0">Você não tem permissão para acessar esta página.</p>
+</div>
 
-@code {
-
-}
+<a class="btn btn-primary" href="/">Voltar para o início</a>
