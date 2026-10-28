@@ -5,6 +5,22 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <base href="/" />
+    <base href="/" />
+    <script>
+            (function () {
+                var r = document.documentElement;
+                try {
+                    r.setAttribute('data-theme', localStorage.getItem('rota-tema') || 'light');
+                    if (localStorage.getItem('rota-sidebar') === 'recolhida') r.classList.add('rota-sidebar-collapsed');
+                } catch (e) { r.setAttribute('data-theme', 'light'); }
+            })();
+    </script>
+    <ResourcePreloader />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets["css/rota-plus.css"]" />
+    <link rel="stylesheet" href="@Assets["SistemaCombustivel.Web.styles.css"]" />
     <ResourcePreloader />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
     <link rel="stylesheet" href="@Assets["app.css"]" />
@@ -16,8 +32,14 @@
 <body>
     <Routes />
     <ReconnectModal />
+    <div id="blazor-error-ui" data-nosnippet>
+        Ocorreu um erro inesperado.
+        <a href="." class="reload">Recarregar</a>
+        <span class="dismiss">🗙</span>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <script src="@Assets["_framework/blazor.web.js"]"></script>
+    <script src="@Assets["js/rota-layout.js"]"></script>
 </body>
 
 </html>

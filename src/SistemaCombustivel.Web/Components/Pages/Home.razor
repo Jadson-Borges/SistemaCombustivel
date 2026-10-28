@@ -1,26 +1,14 @@
 ﻿@page "/"
-@using System.Security.Claims
 @attribute [Authorize]
-@inject AuthenticationStateProvider AuthStateProvider
 
-<h3>Bem-vindo!</h3>
+<PageTitle>Visão geral | Rota+</PageTitle>
 
-@if (claims is not null)
-{
-    <ul>
-        @foreach (var claim in claims)
-        {
-            <li>@claim.Type = @claim.Value</li>
-        }
-    </ul>
-}
-
-@code {
-    private IEnumerable<Claim>? claims;
-
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        claims = authState.User.Claims;
-    }
-}
+<section class="page-heading dashboard-heading animate-enter">
+    <div>
+        <span class="eyebrow"><span class="eyebrow-line"></span> PAINEL DE CONTROLE</span>
+        <AuthorizeView>
+            <h1>Olá, <span>@context.User.Identity?.Name</span>.</h1>
+        </AuthorizeView>
+        <p>Acompanhe os principais processos da sua operação em um único lugar.</p>
+    </div>
+</section>
