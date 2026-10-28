@@ -1,48 +1,68 @@
 ﻿@page "/login"
+@layout AuthLayout
 @using System.ComponentModel.DataAnnotations
 @using SistemaCombustivel.Application.Usuarios.Commands.LoginUsuario
 @inject LoginUsuarioCommandHandler LoginUsuario
 @inject NavigationManager NavigationManager
 
-<PageTitle>Entrar</PageTitle>
+<PageTitle>Entrar | Rota+</PageTitle>
 
-<div class="row justify-content-center">
-    <div class="col-12 col-sm-10 col-md-7 col-lg-5 col-xl-4">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h1 class="h4 mb-4">Entrar</h1>
-
-                @if (mensagemErro is not null)
-                {
-                    <div class="alert alert-danger" role="alert">@mensagemErro</div>
-                }
-
-                <EditForm Model="@modelo" OnValidSubmit="HandleLogin" FormName="loginForm">
-                    <DataAnnotationsValidator />
-
-                    <div class="mb-3">
-                        <label for="email" class="form-label">E-mail</label>
-                        <InputText id="email" class="form-control" autocomplete="username"
-                                   @bind-Value="modelo!.Email" />
-                        <ValidationMessage For="@(() => modelo!.Email)" class="text-danger small" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="senha" class="form-label">Senha</label>
-                        <InputText id="senha" class="form-control" type="password" autocomplete="current-password"
-                                   @bind-Value="modelo!.Senha" />
-                        <ValidationMessage For="@(() => modelo!.Senha)" class="text-danger small" />
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
-                </EditForm>
-
-                <p class="text-center text-muted mt-3 mb-0">
-                    Não tem conta? <a href="/registrar">Registre-se aqui</a>
-                </p>
-            </div>
+<div class="auth-page">
+    <section class="auth-visual">
+        <a class="brand-lockup auth-brand" href="/login" aria-label="Rota+ - página de acesso">
+            <img class="brand-logo" src="@Assets["images/logo-combustivel.jpg"]" alt="" />
+            <span class="brand-copy"><strong>ROTA<span>+</span></strong><small>GESTÃO DE COMBUSTÍVEL</small></span>
+        </a>
+        <div class="auth-visual-content">
+            <span class="eyebrow eyebrow-light"><span class="eyebrow-line"></span> GESTÃO INTELIGENTE</span>
+            <h1>Sua operação em movimento. <span>Suas decisões sob controle.</span></h1>
+            <p>Organize veículos, acompanhe rotas e entenda as despesas da operação em um só lugar.</p>
         </div>
-    </div>
+        <span class="auth-copyright">CONTROLE QUE MOVE SUA EMPRESA.</span>
+    </section>
+
+    <section class="auth-form-side">
+        <div class="auth-form-wrap animate-enter">
+            <span class="form-step-label"><i></i> ACESSO SEGURO</span>
+            <h2>Bem-vindo de volta<span>.</span></h2>
+            <p class="auth-subtitle">Entre com seus dados para acessar o painel.</p>
+
+            @if (mensagemErro is not null)
+            {
+                <div class="alert alert-danger" role="alert">@mensagemErro</div>
+            }
+
+            <EditForm Model="@modelo" OnValidSubmit="HandleLogin" FormName="loginForm" class="auth-form">
+                <DataAnnotationsValidator />
+
+                <div class="form-field">
+                    <label for="email">E-mail</label>
+                    <div class="input-shell">
+                        <i class="bi bi-envelope input-icon" aria-hidden="true"></i>
+                        <InputText id="email" class="form-control" autocomplete="username"
+                                   placeholder="Seu e-mail" @bind-Value="modelo!.Email" />
+                    </div>
+                    <ValidationMessage For="@(() => modelo!.Email)" class="text-danger small" />
+                </div>
+
+                <div class="form-field">
+                    <label for="senha">Senha</label>
+                    <div class="input-shell">
+                        <i class="bi bi-lock input-icon" aria-hidden="true"></i>
+                        <InputText id="senha" class="form-control" type="password" autocomplete="current-password"
+                                   placeholder="Digite sua senha" @bind-Value="modelo!.Senha" />
+                    </div>
+                    <ValidationMessage For="@(() => modelo!.Senha)" class="text-danger small" />
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-primary-custom w-100">
+                    Entrar no sistema <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                </button>
+            </EditForm>
+
+            <p class="auth-security"><i class="bi bi-person-lock" aria-hidden="true"></i> A criação de contas é gerenciada por um administrador do sistema.</p>
+        </div>
+    </section>
 </div>
 
 @code {

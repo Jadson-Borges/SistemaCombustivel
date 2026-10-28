@@ -1,50 +1,85 @@
 ﻿@using SistemaCombustivel.Application.Common
 @inherits LayoutComponentBase
 
-<nav class="navbar navbar-expand-md bg-dark" data-bs-theme="dark">
-    <div class="container">
-        <a class="navbar-brand" href="/">Sistema Combustível</a>
+<AuthorizeView>
+    <Authorized>
+        @{
+            var nome = context.User.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(nome)) nome = "Usuário";
+            var inicial = char.ToUpperInvariant(nome[0]);
+        }
+        <div class="app-shell">
+            <aside id="menuPrincipal" class="app-sidebar" aria-label="Menu principal">
+                <div class="sidebar-brand-row">
+                    <a class="brand-lockup" href="/" title="Visão geral" aria-label="ROTA+ - início">
+                        <img class="brand-logo" src="@Assets["images/logo-combustivel.jpg"]" alt="">
+                        <span class="brand-copy"><strong>ROTA<span>+</span></strong><small>GESTÃO DE COMBUSTÍVEL</small></span>
+                    </a>
+                    <button class="sidebar-collapse-toggle" type="button" data-sidebar-collapse
+                            aria-label="Recolher ou expandir menu" title="Recolher ou expandir menu">
+                        <i class="bi bi-layout-sidebar-inset" aria-hidden="true"></i>
+                    </button>
+                </div>
 
-        <AuthorizeView>
-            <Authorized>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#menuPrincipal" aria-controls="menuPrincipal"
-                        aria-expanded="false" aria-label="Alternar menu">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                <div class="sidebar-section-label">ESPAÇO DE TRABALHO</div>
+                <nav class="main-nav" aria-label="Navegação principal">
+                    <NavLink class="main-nav-link" href="" Match="NavLinkMatch.All" title="Visão geral">
+                        <i class="bi bi-grid-1x2-fill nav-symbol" aria-hidden="true"></i><span>Visão geral</span>
+                    </NavLink>
 
-                <div class="collapse navbar-collapse" id="menuPrincipal">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">Início</NavLink>
-                        </li>
+                    <AuthorizeView Policy="@Autorizacao.PoliticaAdministrador" Context="admin">
+                        <div class="sidebar-nav-divider"></div>
+                        <div class="sidebar-section-label sidebar-section-label-spaced">ADMINISTRAÇÃO</div>
+                        <NavLink class="main-nav-link" href="admin" title="Painel administrativo">
+                            <i class="bi bi-speedometer2 nav-symbol" aria-hidden="true"></i><span>Painel administrativo</span>
+                        </NavLink>
+                    </AuthorizeView>
+                </nav>
 
-                        <AuthorizeView Policy="@Autorizacao.PoliticaAdministrador" Context="admin">
-                            <li class="nav-item">
-                                <NavLink class="nav-link" href="/admin">Administração</NavLink>
-                            </li>
-                        </AuthorizeView>
-                    </ul>
-
-                    <span class="navbar-text me-3">@context.User.Identity?.Name</span>
-
-                    <form method="post" action="/logout" class="d-flex">
+                <div class="sidebar-footer">
+                    <span class="account-profile-link">
+                        <span class="account-avatar">@inicial</span>
+                        <span class="account-user-copy"><span class="account-name">@nome</span></span>
+                    </span>
+                    <form method="post" action="/logout">
                         <AntiforgeryToken />
                         <input type="hidden" name="returnUrl" value="login" />
-                        <button type="submit" class="btn btn-outline-light btn-sm">Sair</button>
+                        <button type="submit" class="logout-button" title="Sair">
+                            <i class="bi bi-box-arrow-right" aria-hidden="true"></i><span class="logout-label">Sair</span>
+                        </button>
                     </form>
                 </div>
-            </Authorized>
-        </AuthorizeView>
-    </div>
-</nav>
+            </aside>
 
-<main class="container py-4">
-    @Body
-</main>
+            <button class="sidebar-backdrop" type="button" data-sidebar-close aria-label="Fechar menu"></button>
 
-<div id="blazor-error-ui" data-nosnippet>
-    Ocorreu um erro inesperado.
-    <a href="." class="reload">Recarregar</a>
-    <span class="dismiss">🗙</span>
-</div>
+            <div class="app-workspace">
+                <header class="topbar">
+                    <div class="topbar-heading">
+                        <button class="mobile-menu-toggle" type="button" data-sidebar-open aria-controls="menuPrincipal"
+                                aria-label="Abrir menu de navegação">
+                            <i class="bi bi-list" aria-hidden="true"></i>
+                        </button>
+                        <div><span class="topbar-overline">PAINEL OPERACIONAL</span><strong>Gestão de combustível</strong></div>
+                    </div>
+                    <div class="topbar-actions">
+                        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Alternar tema" title="Alternar tema">
+                            <i class="bi bi-moon-stars-fill theme-toggle-icon" aria-hidden="true"></i>
+                            <span class="theme-toggle-label">Tema escuro</span>
+                        </button>
+                    </div>
+                </header>
+
+                <main class="app-main">@Body</main>
+
+                <footer class="app-footer">
+                    <span><i class="bi bi-shield-check" aria-hidden="true"></i> Gestão de rotas e despesas</span>
+                    <span>ROTA+</span>
+                </footer>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <main class="app-main">@Body</main>
+    </NotAuthorized>
+</AuthorizeView>
