@@ -1,6 +1,21 @@
 ﻿(() => {
     const raiz = document.documentElement;
 
+        // Mostra o overlay ao enviar um formulário marcado com data-loading-target="id-do-overlay".
+    document.addEventListener('submit', (evento) => {
+        const id = evento.target.dataset?.loadingTarget;
+        if (!id) return;
+        const overlay = document.getElementById(id);
+        if (overlay) overlay.hidden = false;
+    });
+
+    // Botão "Voltar" do navegador pode restaurar a página já com o overlay aberto.
+    window.addEventListener('pageshow', (evento) => {
+        if (evento.persisted) {
+            document.querySelectorAll('.fuel-loading-overlay').forEach(o => o.hidden = true);
+        }
+    });
+
     const atualizarBotaoDeTema = () => {
         const escuro = raiz.getAttribute('data-theme') === 'dark';
         document.querySelectorAll('[data-theme-toggle]').forEach(botao => {
