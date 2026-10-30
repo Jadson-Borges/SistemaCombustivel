@@ -4,7 +4,7 @@ using SistemaCombustivel.Application.Usuarios.Commands.CriarAdministradorInicial
 using SistemaCombustivel.Application.Usuarios.Commands.CriarUsuario;
 using SistemaCombustivel.Application.Usuarios.Commands.LoginUsuario;
 using SistemaCombustivel.Application.Usuarios.Commands.LogoutUsuario;
-using SistemaCombustivel.Application.Usuarios.Commands.RegistrarUsuario;
+using SistemaCombustivel.Application.Usuarios.Queries.ListarUsuarios;
 
 namespace SistemaCombustivel.Application
 {
@@ -16,10 +16,10 @@ namespace SistemaCombustivel.Application
             {
                 serviceCollection.AddTransient<BuscarUserQueryHandler>();
                 serviceCollection.AddTransient<CriarUsuarioCommandHandler>();
-                serviceCollection.AddTransient<RegistrarUsuarioCommandHandler>();
                 serviceCollection.AddTransient<CriarAdministradorInicialCommandHandler>();
                 serviceCollection.AddTransient<LoginUsuarioCommandHandler>();
                 serviceCollection.AddTransient<LogoutUsuarioCommandHandler>();
+                serviceCollection.AddTransient<ListarUsuariosQueryHandler>();
 
                 return serviceCollection;
             }

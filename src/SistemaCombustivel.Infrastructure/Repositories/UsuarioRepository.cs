@@ -15,7 +15,7 @@ namespace SistemaCombustivel.Infrastructure.Repositories
         }
 
         public async Task AdicionarAsync(Usuario usuario, CancellationToken c) =>
-    await _context.Usuarios.AddAsync(usuario, c);
+            await _context.Usuarios.AddAsync(usuario, c);
 
         public async Task<bool> ExisteEmailAsync(string email, CancellationToken c) =>
             await _context.Usuarios.AnyAsync(u => u.Email == email, c);
@@ -28,5 +28,8 @@ namespace SistemaCombustivel.Infrastructure.Repositories
 
         public async Task<Usuario?> ObterPorIdAsync(int id, CancellationToken c) =>
             await _context.Usuarios.FindAsync(new object[] { id }, c);
+
+        public async Task<IReadOnlyList<Usuario>> ListarAsync(CancellationToken c) =>
+            await _context.Usuarios.AsNoTracking().ToListAsync(c);
     }
 }

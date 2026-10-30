@@ -1,0 +1,141 @@
+﻿@page "/usuarios"
+@using System.ComponentModel.DataAnnotations
+@using SistemaCombustivel.Application.Common
+@using SistemaCombustivel.Application.Usuarios.Commands.CriarUsuario
+@using SistemaCombustivel.Application.Usuarios.Queries.ListarUsuarios
+@using SistemaCombustivel.Domain.Entities
+@attribute [Authorize(Policy = Autorizacao.PoliticaAdministrador)]
+@inject ListarUsuariosQueryHandler ListarUsuarios
+@inject CriarUsuarioCommandHandler CriarUsuario
+
+<PageTitle>Usuários | Rota+</PageTitle>
+
+<section class="page-heading animate-enter">
+    <div>
+        <span class="eyebrow"><span class="eyebrow-line"></span> ADMINISTRAÇÃO</span>
+        <h1>Gestão de <span>usuários</span>.</h1>
+        <p>Cadastre usuários internos e acompanhe os perfis de acesso. Não há exclusão física, para preservar o histórico.</p>
+    </div>
+</section>
+
+<div class="module-layout">
+    <section class="card module-card">
+        <h2>Cadastrar usuário</h2>
+
+        @if (mensagemErro is not null)
+        {
+            <div class="alert alert-danger" role="alert">@mensagemErro</div>
+        }
+        @if (mensagemSucesso is not null)
+        {
+            <div class="alert alert-success" role="status">@mensagemSucesso</div>
+        }
+
+        <EditForm Model="@modelo" OnValidSubmit="Cadastrar" FormName="cadastrarUsuario" Enhance>
+            <DataAnnotationsValidator />
+
+            <div class="form-field">
+                <label for="nome">Nome</label>
+                <InputText id="nome" class="form-control" @bind-Value="modelo!.Nome" />
+                <ValidationMessage For="@(() => modelo!.Nome)" class="text-danger small" />
+            </div>
+            <div class="form-field" style="margin-top:14px">
+                <label for="email">E-mail</label>
+                <InputText id="email" class="form-control" type="email" @bind-Value="modelo!.Email" />
+                <ValidationMessage For="@(() => modelo!.Email)" class="text-danger small" />
+            </div>
+            <div class="form-field" style="margin-top:14px">
+                <label for="senha">Senha inicial</label>
+                <InputText id="senha" class="form-control" type="password" autocomplete="new-password" @bind-Value="modelo!.Senha" />
+                <ValidationMessage For="@(() => modelo!.Senha)" class="text-danger small" />
+            </div>
+            <div class="form-field" style="margin-top:14px">
+                <label for="tipo">Perfil</label>
+                <InputSelect id="tipo" class="form-control" @bind-Value="modelo!.Tipo">
+                    <option value="@TipoUsuario.Comum">Usuário comum</option>
+                    <option value="@TipoUsuario.Administrador">Administrador</option>
+                </InputSelect>
+            </div>
+
+            <button class="btn btn-primary btn-primary-custom" type="submit" style="margin-top:18px">
+                Cadastrar usuário <span>→</span>
+            </button>
+        </EditForm>
+    </section>
+
+    <section class="card module-card">
+        <h2>Usuários cadastrados</h2>
+        <div class="table-responsive table-wrap">
+            <table class="table table-hover align-middle data-table">
+                <thead>
+                    <tr><th>Nome / e-mail</th><th>Perfil</th><th>Situação</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in usuarios)
+                    {
+                        <tr>
+                            <td><strong>@u.NomeUsuario</strong><small>@u.Email</small></td>
+                            <td>@(u.Tipo == TipoUsuario.Administrador ? "Administrador" : "Usuário comum")</td>
+                            <td><span class="status-pill">@(u.Ativo ? "Ativo" : "Inativo")</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <p class="report-explainer">Alterações de perfil valem a partir do próximo login do usuário.</p>
+    </section>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private ModeloNovoUsuario? modelo { get; set; }
+
+    private IReadOnlyList<UsuarioListaDto> usuarios = [];
+    private string? mensagemErro;
+    private string? mensagemSucesso;
+
+    protected override async Task OnInitializedAsync()
+    {
+        modelo ??= new();
+        await CarregarAsync();
+    }
+
+    private async Task CarregarAsync() =>
+        usuarios = await ListarUsuarios.Handle(new ListarUsuariosQuery(), CancellationToken.None);
+
+    private async Task Cadastrar()
+    {
+        mensagemErro = null;
+        mensagemSucesso = null;
+
+        var resultado = await CriarUsuario.Handle(
+            new CriarUsuarioCommand(modelo!.Nome, modelo.Email, modelo.Senha, modelo.Tipo),
+            CancellationToken.None);
+
+        if (!resultado.Sucesso)
+        {
+            mensagemErro = resultado.Erro;
+            return;
+        }
+
+        mensagemSucesso = $"Usuário {modelo.Nome} cadastrado com sucesso.";
+        modelo = new();
+        await CarregarAsync(); // recarrega: o OnInitializedAsync rodou ANTES do cadastro
+    }
+
+    public class ModeloNovoUsuario
+    {
+        [Required(ErrorMessage = "Informe o nome")]
+        [StringLength(100, ErrorMessage = "O nome deve ter no máximo 100 caracteres")]
+        public string Nome { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Informe o e-mail")]
+        [EmailAddress(ErrorMessage = "E-mail inválido")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Informe a senha inicial")]
+        public string Senha { get; set; } = string.Empty;
+
+        public TipoUsuario Tipo { get; set; } = TipoUsuario.Comum;
+    }
+}
