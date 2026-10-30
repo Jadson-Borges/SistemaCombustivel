@@ -1,0 +1,3 @@
+﻿namespace SistemaCombustivel.Application.Usuarios.Queries.ListarUsuarios;
+
+public record ListarUsuariosQuery;

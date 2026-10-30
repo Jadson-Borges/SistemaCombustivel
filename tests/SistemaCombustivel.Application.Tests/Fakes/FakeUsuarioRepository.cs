@@ -51,4 +51,10 @@ public class FakeUsuarioRepository : IUsuarioRepository
 
         return Task.CompletedTask;
     }
+
+    public Task<IReadOnlyList<Usuario>> ListarAsync(CancellationToken c)
+    {
+        Registrar(c);
+        return Task.FromResult<IReadOnlyList<Usuario>>(Usuarios.ToList());
+    }
 }

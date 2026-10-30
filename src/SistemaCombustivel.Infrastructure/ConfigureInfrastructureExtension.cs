@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SistemaCombustivel.Application.Abstractions;
 using SistemaCombustivel.Application.Identity;
-using SistemaCombustivel.Application.Usuarios.Commands.CriarAdministradorInicial;
-using SistemaCombustivel.Application.Usuarios.Commands.CriarUsuario;
-using SistemaCombustivel.Application.Usuarios.Commands.RegistrarUsuario;
 using SistemaCombustivel.Infrastructure.Data;
 using SistemaCombustivel.Infrastructure.Identity;
 using SistemaCombustivel.Infrastructure.Repositories;
