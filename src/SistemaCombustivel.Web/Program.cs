@@ -1,8 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaCombustivel.Application;
-using SistemaCombustivel.Application.Abstractions;
 using SistemaCombustivel.Application.Common;
 using SistemaCombustivel.Application.Usuarios.Commands.CriarAdministradorInicial;
 using SistemaCombustivel.Application.Usuarios.Commands.LogoutUsuario;
@@ -49,8 +49,12 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddAuthorization(options =>
 {
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+         .RequireAuthenticatedUser()
+         .Build();
+
     options.AddPolicy(Autorizacao.PoliticaAdministrador, policy =>
-    policy.RequireClaim(Autorizacao.ClaimTipoUsuario, TipoUsuario.Administrador.ToString()));
+        policy.RequireClaim(Autorizacao.ClaimTipoUsuario, TipoUsuario.Administrador.ToString()));
 });
 
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
@@ -105,7 +109,9 @@ app.UseAuthorization();
 
 app.UseAntiforgery();
 
-app.MapStaticAssets();
+app.MapStaticAssets()
+    .AllowAnonymous();
+
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
