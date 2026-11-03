@@ -8,6 +8,16 @@
 
 <PageTitle>Entrar | Rota+</PageTitle>
 
+<div id="login-loading" class="fuel-loading-overlay" role="status" aria-live="polite" hidden>
+    <div class="fuel-loading-content">
+        <img class="fuel-loading-logo" src="@Assets["images/logo-combustivel.jpg"]" alt="" />
+        <div class="tank-loader" aria-hidden="true"><div class="tank-liquid"><span></span></div><div class="tank-glint"></div></div>
+        <strong>Preparando sua rota</strong>
+        <p>Conferindo seus dados e preparando o painel...</p>
+        <div class="loading-track"><span></span></div>
+    </div>
+</div>
+
 <div class="auth-page">
     <section class="auth-visual">
         <a class="brand-lockup auth-brand" href="/login" aria-label="Rota+ - página de acesso">
@@ -33,7 +43,7 @@
                 <div class="alert alert-danger" role="alert">@mensagemErro</div>
             }
 
-            <EditForm Model="@modelo" OnValidSubmit="HandleLogin" FormName="loginForm" class="auth-form">
+            <EditForm Model="@modelo" OnValidSubmit="HandleLogin" FormName="loginForm" class="auth-form" data-loading-target="login-loading">
                 <DataAnnotationsValidator />
 
                 <div class="form-field">
@@ -41,7 +51,7 @@
                     <div class="input-shell">
                         <i class="bi bi-envelope input-icon" aria-hidden="true"></i>
                         <InputText id="email" class="form-control" autocomplete="username"
-                                   placeholder="Seu e-mail" @bind-Value="modelo!.Email" />
+                                   placeholder="Seu e-mail" required @bind-Value="modelo!.Email" />
                     </div>
                     <ValidationMessage For="@(() => modelo!.Email)" class="text-danger small" />
                 </div>
@@ -51,7 +61,7 @@
                     <div class="input-shell">
                         <i class="bi bi-lock input-icon" aria-hidden="true"></i>
                         <InputText id="senha" class="form-control" type="password" autocomplete="current-password"
-                                   placeholder="Digite sua senha" @bind-Value="modelo!.Senha" />
+                                   placeholder="Digite sua senha" required @bind-Value="modelo!.Senha" />
                     </div>
                     <ValidationMessage For="@(() => modelo!.Senha)" class="text-danger small" />
                 </div>
