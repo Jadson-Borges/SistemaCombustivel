@@ -30,6 +30,9 @@ namespace SistemaCombustivel.Infrastructure.Repositories
             await _context.Usuarios.FindAsync(new object[] { id }, c);
 
         public async Task<IReadOnlyList<Usuario>> ListarAsync(CancellationToken c) =>
-    await _context.Usuarios.AsNoTracking().ToListAsync(c);
+           await _context.Usuarios.AsNoTracking().ToListAsync(c);
+
+        public async Task<int> ContarAdministradoresAtivosAsync(CancellationToken c) =>
+           await _context.Usuarios.CountAsync(u => u.Tipo == TipoUsuario.Administrador && u.Ativo, c);
     }
 }

@@ -47,6 +47,11 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/acesso-negado";
 });
 
+// Confere o security stamp a cada requisição (padrão: 30 min).
+// Assim, desativar um usuário derruba a sessão dele na hora.
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+    options.ValidationInterval = TimeSpan.Zero);
+
 builder.Services.AddAuthorization(options =>
 {
     options.FallbackPolicy = new AuthorizationPolicyBuilder()

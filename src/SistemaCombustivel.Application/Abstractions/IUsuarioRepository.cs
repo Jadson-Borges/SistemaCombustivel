@@ -10,5 +10,6 @@ namespace SistemaCombustivel.Application.Abstractions
         Task<Usuario?> ObterPorIdAsync(int id, CancellationToken c);
         Task SalvarAlteracoesAsync(CancellationToken c);
         Task<IReadOnlyList<Usuario>> ListarAsync(CancellationToken c);
+        Task<int> ContarAdministradoresAtivosAsync(CancellationToken c);
     }
 }
