@@ -57,4 +57,10 @@ public class FakeUsuarioRepository : IUsuarioRepository
         Registrar(c);
         return Task.FromResult<IReadOnlyList<Usuario>>(Usuarios.ToList());
     }
+
+    public Task<int> ContarAdministradoresAtivosAsync(CancellationToken c)
+    {
+        Registrar(c);
+        return Task.FromResult(Usuarios.Count(u => u.Tipo == TipoUsuario.Administrador && u.Ativo));
+    }
 }

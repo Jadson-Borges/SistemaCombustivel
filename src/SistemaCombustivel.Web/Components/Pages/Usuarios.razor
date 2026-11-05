@@ -4,9 +4,14 @@
 @using SistemaCombustivel.Application.Usuarios.Commands.CriarUsuario
 @using SistemaCombustivel.Application.Usuarios.Queries.ListarUsuarios
 @using SistemaCombustivel.Domain.Entities
+@using SistemaCombustivel.Application.Usuarios.Commands.DesativarUsuario
+@using SistemaCombustivel.Application.Usuarios.Commands.ReativarUsuario
 @attribute [Authorize(Policy = Autorizacao.PoliticaAdministrador)]
 @inject ListarUsuariosQueryHandler ListarUsuarios
 @inject CriarUsuarioCommandHandler CriarUsuario
+@inject DesativarUsuarioCommandHandler DesativarUsuario
+@inject ReativarUsuarioCommandHandler ReativarUsuario
+
 
 <PageTitle>Usuários | Rota+</PageTitle>
 
@@ -18,18 +23,18 @@
     </div>
 </section>
 
+@if (mensagemErro is not null)
+{
+    <div class="alert alert-danger" role="alert">@mensagemErro</div>
+}
+@if (mensagemSucesso is not null)
+{
+    <div class="alert alert-success" role="status">@mensagemSucesso</div>
+}
+
 <div class="module-layout">
     <section class="card module-card">
         <h2>Cadastrar usuário</h2>
-
-        @if (mensagemErro is not null)
-        {
-            <div class="alert alert-danger" role="alert">@mensagemErro</div>
-        }
-        @if (mensagemSucesso is not null)
-        {
-            <div class="alert alert-success" role="status">@mensagemSucesso</div>
-        }
 
         <EditForm Model="@modelo" OnValidSubmit="Cadastrar" FormName="cadastrarUsuario" Enhance>
             <DataAnnotationsValidator />
@@ -68,7 +73,7 @@
         <div class="table-responsive table-wrap">
             <table class="table table-hover align-middle data-table">
                 <thead>
-                    <tr><th>Nome / e-mail</th><th>Perfil</th><th>Situação</th></tr>
+                    <tr><th>Nome / e-mail</th><th>Perfil</th><th>Situação</th><th class="text-end">Ações</th></tr>
                 </thead>
                 <tbody>
                     @foreach (var u in usuarios)
@@ -77,6 +82,20 @@
                             <td><strong>@u.NomeUsuario</strong><small>@u.Email</small></td>
                             <td>@(u.Tipo == TipoUsuario.Administrador ? "Administrador" : "Usuário comum")</td>
                             <td><span class="status-pill">@(u.Ativo ? "Ativo" : "Inativo")</span></td>
+                            <td class="text-end">
+                                @if (u.Ativo)
+                                {
+                                    <EditForm Model="@u" FormName="@($"desativar-{u.Id}")" OnValidSubmit="() => DesativarAsync(u.Id)" Enhance>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Desativar</button>
+                                    </EditForm>
+                                }
+                                else
+                                {
+                                    <EditForm Model="@u" FormName="@($"reativar-{u.Id}")" OnValidSubmit="() => ReativarAsync(u.Id)" Enhance>
+                                        <button type="submit" class="btn btn-sm btn-outline-success">Reativar</button>
+                                    </EditForm>
+                                }
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -137,5 +156,30 @@
         public string Senha { get; set; } = string.Empty;
 
         public TipoUsuario Tipo { get; set; } = TipoUsuario.Comum;
+    }
+
+    private async Task DesativarAsync(int id) =>
+    await ExecutarAcaoAsync(
+        () => DesativarUsuario.Handle(new DesativarUsuarioCommand(id), CancellationToken.None),
+        "Usuário desativado.");
+
+    private async Task ReativarAsync(int id) =>
+        await ExecutarAcaoAsync(
+            () => ReativarUsuario.Handle(new ReativarUsuarioCommand(id), CancellationToken.None),
+            "Usuário reativado.");
+
+    private async Task ExecutarAcaoAsync(Func<Task<Resultado>> acao, string mensagemDeSucesso)
+    {
+        mensagemErro = null;
+        mensagemSucesso = null;
+
+        var resultado = await acao();
+
+        if (resultado.Sucesso)
+            mensagemSucesso = mensagemDeSucesso;
+        else
+            mensagemErro = resultado.Erro;
+
+        await CarregarAsync(); // recarrega a tabela depois da ação
     }
 }

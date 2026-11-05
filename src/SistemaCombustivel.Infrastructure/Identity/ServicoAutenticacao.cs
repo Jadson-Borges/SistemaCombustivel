@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using SistemaCombustivel.Application.Abstractions;
+using SistemaCombustivel.Application.Common;
 
 namespace SistemaCombustivel.Infrastructure.Identity
 {
@@ -34,23 +36,40 @@ namespace SistemaCombustivel.Infrastructure.Identity
             return ResultadoAutenticacao.Ok(applicationUser.Id);
         }
 
-        public async Task<ResultadoAutenticacao> LoginAsync(string email, string senha)
+        public async Task<Resultado<int>> VerificarCredenciaisAsync(string email, string senha)
         {
-            var resultado = await _signInManager.PasswordSignInAsync(
-                email, senha, isPersistent: false, lockoutOnFailure: true);
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+                return Resultado<int>.Falha("E-mail ou senha invalidos.");
+
+            var resultado = await _signInManager.CheckPasswordSignInAsync(user, senha, lockoutOnFailure: true);
 
             if (!resultado.Succeeded)
             {
                 var erro = resultado.IsLockedOut
                     ? "Conta bloqueada temporariamente por excesso de tentativas."
                     : "E-mail ou senha invalidos.";
-                return ResultadoAutenticacao.Falha(erro);
+                return Resultado<int>.Falha(erro);
             }
 
-            return ResultadoAutenticacao.Ok(string.Empty);
+            return Resultado<int>.Ok(user.UsuarioId);
         }
 
-        public async Task LogoutAsync () => await _signInManager.SignOutAsync();
+        public async Task EntrarAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email)
+                ?? throw new InvalidOperationException("Usuário não encontrado para iniciar a sessão.");
 
+            await _signInManager.SignInAsync(user, isPersistent: false);
+        }
+
+        public async Task InvalidarSessoesAsync(int usuarioId)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UsuarioId == usuarioId);
+            if (user is not null)
+                await _userManager.UpdateSecurityStampAsync(user);
+        }
+
+        public async Task LogoutAsync() => await _signInManager.SignOutAsync();
     }
 }
