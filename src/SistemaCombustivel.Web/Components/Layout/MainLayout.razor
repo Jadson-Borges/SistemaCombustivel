@@ -14,7 +14,7 @@
                     <a class="brand-lockup" href="/" title="Visão geral" aria-label="ROTA+ - início">
                         <img class="brand-logo" src="@Assets["images/logo-combustivel.jpg"]" alt="">
                         <span class="brand-copy"><strong>ROTA<span>+</span></strong><small>GESTÃO DE COMBUSTÍVEL</small></span>
-                    </a>
+                    </a>                    
                     <button class="sidebar-collapse-toggle" type="button" data-sidebar-collapse
                             aria-label="Recolher ou expandir menu" title="Recolher ou expandir menu">
                         <i class="bi bi-layout-sidebar-inset" aria-hidden="true"></i>
@@ -26,7 +26,9 @@
                     <NavLink class="main-nav-link" href="" Match="NavLinkMatch.All" title="Visão geral">
                         <i class="bi bi-grid-1x2-fill nav-symbol" aria-hidden="true"></i><span>Visão geral</span>
                     </NavLink>
-
+                    <NavLink class="main-nav-link" href="veiculos" title="Veículos">
+                        <i class="bi bi-car-front-fill nav-symbol" aria-hidden="true"></i><span>Veículos</span>
+                    </NavLink>
                     <AuthorizeView Policy="@Autorizacao.PoliticaAdministrador" Context="admin">
                         <div class="sidebar-nav-divider"></div>
                         <div class="sidebar-section-label sidebar-section-label-spaced">ADMINISTRAÇÃO</div>

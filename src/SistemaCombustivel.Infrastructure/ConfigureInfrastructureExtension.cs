@@ -17,6 +17,7 @@ namespace SistemaCombustivel.Infrastructure
                 ServiceCollection.AddScoped<IServicoAutenticacao, ServicoAutenticacao>();
                 ServiceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
                 ServiceCollection.AddScoped<IUserRepository, UserRepository>();
+                ServiceCollection.AddScoped<IVeiculoRepository, VeiculoRepository>();
 
                 return ServiceCollection;
             }
