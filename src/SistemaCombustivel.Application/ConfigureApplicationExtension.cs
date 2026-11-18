@@ -7,6 +7,8 @@ using SistemaCombustivel.Application.Usuarios.Commands.LoginUsuario;
 using SistemaCombustivel.Application.Usuarios.Commands.LogoutUsuario;
 using SistemaCombustivel.Application.Usuarios.Commands.ReativarUsuario;
 using SistemaCombustivel.Application.Usuarios.Queries.ListarUsuarios;
+using SistemaCombustivel.Application.Veiculos.Commands.CadastrarVeiculo;
+using SistemaCombustivel.Application.Veiculos.Queries.ListarVeiculos;
 
 
 namespace SistemaCombustivel.Application
@@ -25,6 +27,8 @@ namespace SistemaCombustivel.Application
                 serviceCollection.AddTransient<ListarUsuariosQueryHandler>();
                 serviceCollection.AddTransient<DesativarUsuarioCommandHandler>();
                 serviceCollection.AddTransient<ReativarUsuarioCommandHandler>();
+                serviceCollection.AddTransient<CadastrarVeiculoCommandHandler>();
+                serviceCollection.AddTransient<ListarVeiculosQueryHandler>();
 
                 return serviceCollection;
             }

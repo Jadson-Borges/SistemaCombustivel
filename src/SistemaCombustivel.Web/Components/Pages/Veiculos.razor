@@ -1,0 +1,176 @@
+﻿@page "/veiculos"
+@using System.ComponentModel.DataAnnotations
+@using System.Globalization
+@using SistemaCombustivel.Application.Common
+@using SistemaCombustivel.Application.Veiculos.Commands.CadastrarVeiculo
+@using SistemaCombustivel.Application.Veiculos.Queries.ListarVeiculos
+@attribute [Authorize]
+@inject CadastrarVeiculoCommandHandler CadastrarVeiculo
+@inject ListarVeiculosQueryHandler ListarVeiculos
+@inject IAuthorizationService AuthorizationService
+
+<PageTitle>Veículos | Rota+</PageTitle>
+
+<section class="page-heading animate-enter">
+    <div>
+        <span class="eyebrow"><span class="eyebrow-line"></span> CADASTRO</span>
+        <h1>@(ehAdministrador ? "Todos os" : "Meus") <span>veículos</span>.</h1>
+        <p>Cadastre os veículos usados nas rotas. Não há exclusão física: veículos com histórico são apenas desativados.</p>
+    </div>
+</section>
+
+@if (mensagemErro is not null)
+{
+    <div class="alert alert-danger" role="alert">@mensagemErro</div>
+}
+@if (mensagemSucesso is not null)
+{
+    <div class="alert alert-success" role="status">@mensagemSucesso</div>
+}
+
+<div class="module-layout">
+    <section class="card module-card">
+        <h2>Novo veículo</h2>
+
+        <EditForm Model="@formulario" OnValidSubmit="Cadastrar" FormName="cadastrarVeiculo" Enhance>
+            <DataAnnotationsValidator />
+
+            <div class="form-field">
+                <label for="descricao">Identificação</label>
+                <InputText id="descricao" class="form-control" maxlength="150" placeholder="Ex.: Veículo operacional" @bind-Value="formulario!.Descricao" />
+                <ValidationMessage For="@(() => formulario!.Descricao)" class="text-danger small" />
+            </div>
+            <div class="form-field" style="margin-top:14px">
+                <label for="marca">Marca</label>
+                <InputText id="marca" class="form-control" maxlength="50" @bind-Value="formulario!.Marca" />
+                <ValidationMessage For="@(() => formulario!.Marca)" class="text-danger small" />
+            </div>
+            <div class="form-field" style="margin-top:14px">
+                <label for="modelo">Modelo</label>
+                <InputText id="modelo" class="form-control" maxlength="50" @bind-Value="formulario!.Modelo" />
+                <ValidationMessage For="@(() => formulario!.Modelo)" class="text-danger small" />
+            </div>
+            <div class="form-field" style="margin-top:14px">
+                <label for="placa">Placa</label>
+                <InputText id="placa" class="form-control" maxlength="10" placeholder="ABC1D23" @bind-Value="formulario!.Placa" />
+                <ValidationMessage For="@(() => formulario!.Placa)" class="text-danger small" />
+            </div>
+            <div class="form-field" style="margin-top:14px">
+                <label for="kmInicial">KM inicial</label>
+                <InputNumber id="kmInicial" class="form-control" min="0" step="0.01" @bind-Value="formulario!.KmInicial" />
+                <ValidationMessage For="@(() => formulario!.KmInicial)" class="text-danger small" />
+            </div>
+
+            <button class="btn btn-primary btn-primary-custom" type="submit" style="margin-top:18px">
+                Cadastrar veículo <span>→</span>
+            </button>
+        </EditForm>
+    </section>
+
+    <section class="card module-card">
+        <h2>Veículos cadastrados</h2>
+        <div class="table-responsive table-wrap">
+            <table class="table table-hover align-middle data-table">
+                <thead>
+                    <tr><th>Veículo</th><th>Placa</th><th>KM inicial</th><th>KM oficial</th><th>Situação</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var v in veiculos)
+                    {
+                        <tr>
+                            <td><strong>@v.Descricao</strong><small>@v.Marca @v.Modelo</small></td>
+                            <td>@v.Placa</td>
+                            <td>@v.KmInicial.ToString("N0", PtBr)</td>
+                            <td>@v.KmOficial.ToString("N0", PtBr)</td>
+                            <td><span class="status-pill">@(v.Ativo ? "Ativo" : "Inativo")</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @if (veiculos.Count == 0)
+        {
+            <p class="report-explainer">Nenhum veículo cadastrado ainda.</p>
+        }
+    </section>
+</div>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? EstadoAutenticacao { get; set; }
+
+    [SupplyParameterFromForm]
+    private ModeloNovoVeiculo? formulario { get; set; }
+
+    private static readonly CultureInfo PtBr = new("pt-BR");
+
+    private IReadOnlyList<VeiculoListaDto> veiculos = [];
+    private int usuarioLogadoId;
+    private bool ehAdministrador;
+    private string? mensagemErro;
+    private string? mensagemSucesso;
+
+    protected override async Task OnInitializedAsync()
+    {
+        formulario ??= new();
+        await IdentificarUsuarioLogadoAsync();
+        await CarregarAsync();
+    }
+
+    // O id e o perfil vêm do cookie (servidor), nunca de um campo da tela.
+    private async Task IdentificarUsuarioLogadoAsync()
+    {
+        var estado = await EstadoAutenticacao!;
+        usuarioLogadoId = int.Parse(estado.User.FindFirst(Autorizacao.ClaimUsuarioId)!.Value);
+        ehAdministrador = (await AuthorizationService
+            .AuthorizeAsync(estado.User, Autorizacao.PoliticaAdministrador)).Succeeded;
+    }
+
+    private async Task CarregarAsync() =>
+        veiculos = await ListarVeiculos.Handle(
+            new ListarVeiculosQuery(usuarioLogadoId, ehAdministrador), CancellationToken.None);
+
+    private async Task Cadastrar()
+    {
+        mensagemErro = null;
+        mensagemSucesso = null;
+
+        var resultado = await CadastrarVeiculo.Handle(
+            new CadastrarVeiculoCommand(
+                usuarioLogadoId, formulario!.Descricao, formulario.Marca,
+                formulario.Modelo, formulario.Placa, formulario.KmInicial),
+            CancellationToken.None);
+
+        if (!resultado.Sucesso)
+        {
+            mensagemErro = resultado.Erro;
+            return;
+        }
+
+        mensagemSucesso = "Veículo cadastrado com sucesso.";
+        formulario = new();
+        await CarregarAsync();   // recarrega: o OnInitializedAsync rodou antes do cadastro
+    }
+
+    public class ModeloNovoVeiculo
+    {
+        [Required(ErrorMessage = "Informe a identificação")]
+        [StringLength(150, ErrorMessage = "Máximo de 150 caracteres")]
+        public string Descricao { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Informe a marca")]
+        [StringLength(50, ErrorMessage = "Máximo de 50 caracteres")]
+        public string Marca { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Informe o modelo")]
+        [StringLength(50, ErrorMessage = "Máximo de 50 caracteres")]
+        public string Modelo { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Informe a placa")]
+        [StringLength(10, ErrorMessage = "Máximo de 10 caracteres")]
+        public string Placa { get; set; } = string.Empty;
+
+        [Range(0, 99999999, ErrorMessage = "O KM inicial deve ser zero ou maior")]
+        public decimal KmInicial { get; set; }
+    }
+}
